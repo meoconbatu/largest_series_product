@@ -2,7 +2,6 @@ package lsproduct
 
 import (
 	"errors"
-	"strconv"
 )
 
 const testVersion = 4
@@ -49,13 +48,12 @@ func Worker(productChan chan int64, errChan chan error, digits string, span int,
 }
 func Multiple(series string) (output int64, err error) {
 	output = 1
-	var a int64
 	for i := 0; i < len(series); i++ {
-		if a, err = strconv.ParseInt(string(series[i]), 10, 64); err == nil {
-			output = output * a
-		} else {
-			return
+		c := series[i]
+		if c < '0' || c > '9' {
+			return 0, errors.New("not a number")
 		}
+		output *= int64(c - 48)
 	}
 	return
 }
