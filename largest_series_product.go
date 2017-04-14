@@ -20,7 +20,6 @@ func LargestSeriesProduct(digits string, span int) (product int64, err error) {
 	temp := int(digitsLen / 2)
 	go Worker(productChan, errChan, digits, span, 0, temp)
 	go Worker(productChan, errChan, digits, span, temp+1-span, digitsLen)
-
 	for i := 0; i < 2; i++ {
 		select {
 		case err = <-errChan:
@@ -35,19 +34,11 @@ func LargestSeriesProduct(digits string, span int) (product int64, err error) {
 }
 func Worker(productChan chan int64, errChan chan error, digits string, span int, from int, to int) {
 	product := int64(-1)
-	digitsLen := len(digits)
-
-	if span < 0 || span > digitsLen || from < 0 || to < 0 {
-		productChan <- product
-		errChan <- errors.New("error")
-		return
-	}
 	for i := from; i+span <= to; i++ {
 		seriesAtIndex := digits[i : i+span]
 		tempProduct, tempErr := Multiple(seriesAtIndex)
 		if tempErr != nil {
 			errChan <- errors.New("error")
-			productChan <- product
 			return
 		}
 		if tempProduct > product {
